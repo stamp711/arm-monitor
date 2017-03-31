@@ -203,10 +203,16 @@ Next4
         CMP     r2, #1          ;// args = 1, only <address> is specified
         BEQ     m_use_spec_addr ;// use that <address>
         
-        CMP     r2, #1          ;// args = 2, <value> is specified
+        CMP     r2, #2          ;// args = 2, <value> is specified
         BEQ     m_overwrite     ;// overwrite the memory contents
 
         B       InvalidComm
+
+m_overwrite
+        STR     r4, [r3]
+        LDR     r3, =Messages3
+        BL      PrintNextMessage
+        B       m_end
 
 m_use_prev_addr
         LDR     r1, =mAddr
@@ -222,9 +228,13 @@ m_use_spec_addr
         B       m_getdata
 
 m_getdata
-        LDRB    r2, [r2]        ;// get byte stored in address [r2]
+        LDRB    r0, [r2]        ;// get byte stored in address [r2]
+        BL      PrintData
 
-m_overwrite
+m_end
+        LDR     r3, =Messages2
+        BL      PrintNextMessage
+        B       Continue
 
 
 ;//--------------------------------
