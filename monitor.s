@@ -54,6 +54,8 @@ L1      BL      Getline
         LDR     r5, [r0, #12]   ;//get 3rd param
 ;// OK start your code here
 
+
+;//--------------------------------
 ;//COMMAND: 'Q'
 		CMP		r1, #0x51		;//'Q'=0x51
 		BNE		Next0
@@ -61,8 +63,10 @@ L1      BL      Getline
 		BNE		InvalidComm
 		B		MonQuit
 
-Next0
+
+;//--------------------------------
 ;//COMMAND: 'E'
+Next0
         CMP     r1, #0x45		;//'E'=0x45
         BNE     Next1
 		;//Task1: You have to implement COMMAND 'E' here
@@ -87,8 +91,10 @@ E_end
         STR     r3, EndianType
         B       Continue
 
-Next1
+
+;//--------------------------------
 ;//COMMAND: 'D'
+Next1
 		CMP		r1, #0x44		;//'D'=0x44
 		BNE		Next2
 		CMP		r2, #1
@@ -109,14 +115,17 @@ D_end
 		B		Continue
 		
 
-Next2
+;//--------------------------------
 ;//COMMAND: 'C'
+Next2
 		CMP		r1, #0x43		;//'C'=0x43
 		BNE		Next3
-		
 		;//Task2: You have to implement COMMAND 'C' here
-Next3
+        
+
+;//--------------------------------
 ;//COMMAND: 'M'
+Next3
 		CMP		r1, #0x4D		;//'M'=0x4D
 		BNE		Next4
 
@@ -182,7 +191,7 @@ M_print16
 		LDR		r1, =SendChar
 		STR		r0, [r1]		;//store character to print
 		WriteC					;//print character 'h'		
-		b		M_end
+        b		M_end
 M_print10
 		CMP		r3, #10
 		BNE		M_print2		
@@ -204,26 +213,31 @@ M_end
 
 		B Continue
 
-Next4
+
+;//--------------------------------
 ;//COMMAND: 'm'
+Next4
 		CMP		r1, #0x6D		;//'m'=0x6D
 		BNE		Next5
 
 		;//Task4: You have to implement COMMAND 'm' here
 
-Next5
+
+;//--------------------------------
 ;//COMMAND: 'R' or 'r'
+Next5
 		CMP		r1, #0x52		;//'R'=0x52
 		CMPNE	r1, #0x72		;//'r'=0x72
 		BNE		Next6
 		;//Task4: You have to implement COMMAND 'R' and 'r' here		
 
-	
-Next6
+
+;//--------------------------------
 ;//more commands can be added here
-	
-	
-	
+Next6
+
+
+;//--------------------------------
 InvalidComm
 		LDR		r3, =Messages1
 		BL		PrintNextMessage
