@@ -180,33 +180,9 @@ M_print
 		ORR		r2, r2, r3	
 		
 M_3
-		LDR		r3, DataFormat		
-		CMP		r3, #16
-		BNE		M_print10
-M_print16	
-		MOV 	r0, r2
-		BL		Print16
-		
-		MOV 	r0, #'h'		;//print character
-		LDR		r1, =SendChar
-		STR		r0, [r1]		;//store character to print
-		WriteC					;//print character 'h'
-        b		M_end
-M_print10
-		CMP		r3, #10
-		BNE		M_print2		
-		MOV		r0, r2
+        MOV     r0, r2
+        BL      PrintData
 
-		BL		Print10
-		b		M_end
-M_print2
-		MOV		r0, r2
-
-		BL		Print2
-		MOV 	r0, #'b'		;//print character
-		LDR		r1, =SendChar
-		STR		r0, [r1]		;//store character to print
-		WriteC					;//print character 'h'			
 M_end
 		LDR		r3, =Messages2
 		BL		PrintNextMessage
