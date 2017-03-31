@@ -63,10 +63,29 @@ L1      BL      Getline
 
 Next0
 ;//COMMAND: 'E'
-		CMP		r1, #0x45		;//'E'=0x45
-		BNE		Next1
+        CMP     r1, #0x45		;//'E'=0x45
+        BNE     Next1
 		;//Task1: You have to implement COMMAND 'E' here
-
+        CMP     r2, #0
+        BEQ     E_0para
+        CMP     r2, #1
+        BEQ     E_1para
+        B       InvalidComm
+E_0para
+        LDR     r3, EndianType
+		CMP     r3, #0
+		MOVEQ   r3, #1
+		MOVNE   r3, #0
+		B       E_end
+E_1para
+        CMP     r3, #0
+		BEQ     E_end
+		CMP     r3, #1
+		BEQ     E_end
+		B       InvalidComm
+E_end
+        STR     r3, EndianType
+        B       Continue
 
 Next1
 ;//COMMAND: 'D'
