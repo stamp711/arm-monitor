@@ -66,10 +66,10 @@ L1      BL      Getline
 
 ;//--------------------------------
 ;//COMMAND: 'E'
+://AUTHOR: APRICITY
 Next0
         CMP     r1, #0x45		;//'E'=0x45
         BNE     Next1
-		;//Task1: You have to implement COMMAND 'E' here
         CMP     r2, #0
         BEQ     E_0para
         CMP     r2, #1
