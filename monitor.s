@@ -216,11 +216,39 @@ M_end
 
 ;//--------------------------------
 ;//COMMAND: 'm'
+;//AUTHOR: APRICITY
 Next4
 		CMP		r1, #0x6D		;//'m'=0x6D
 		BNE		Next5
+        
+        CMP     r2, #0          ;// args = 0, <address> is not specified
+        BEQ     m_use_prev_addr ;// use the previous byte address + 1
 
-		;//Task4: You have to implement COMMAND 'm' here
+        CMP     r2, #1          ;// args = 1, only <address> is specified
+        BEQ     m_use_spec_addr ;// use that <address>
+        
+        CMP     r2, #1          ;// args = 2, <value> is specified
+        BEQ     m_overwrite     ;// overwrite the memory contents
+
+        B       InvalidComm
+
+m_use_prev_addr
+        LDR     r1, =mAddr
+        LDR     r2, [r1]
+        ADD     r2, r2, #1
+        STR     r2, [r1]
+        B       m_getdata
+
+m_use_spec_addr
+        LDR     r1, =mAddr
+        MOV     r2, r3
+        STR     r2, [r1]
+        B       m_getdata
+
+m_getdata
+        LDRB    r2, [r2]        ;// get byte stored in address [r2]
+
+m_overwrite
 
 
 ;//--------------------------------
