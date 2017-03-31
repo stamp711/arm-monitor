@@ -190,7 +190,7 @@ M_print16
 		MOV 	r0, #'h'		;//print character
 		LDR		r1, =SendChar
 		STR		r0, [r1]		;//store character to print
-		WriteC					;//print character 'h'		
+		WriteC					;//print character 'h'
         b		M_end
 M_print10
 		CMP		r3, #10
