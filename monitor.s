@@ -323,17 +323,40 @@ Print2		;//output the string of a 32 bits number at r0 in bin format
 		LDMFD   r13!, {r0-r12,r14}
 		MOV		pc, r14
 
-PrintData		;//output the string of a number at r0 in given format
-		STMFD	r13!, {r0-r12,r14}
-		
-		LDR		r1, DataFormat	
-		CMP		r1, #16
-		BLEQ	Print16
-		CMP		r1, #10
-		BLEQ	Print10	
-		CMP		r1, #2
-		BLEQ	Print2		
-		
+
+;//--------------------------------
+PrintData       ;//output the string of a number at r0 in given format
+		STMFD   r13!, {r0-r12,r14}
+
+        LDR     r1, DataFormat
+        CMP     r1, #16
+        BEQ     PrintData_16
+        CMP     r1, #10
+        BEQ     PrintData_10
+        CMP     r1, #2
+        BEQ     PrintData_2
+        B       PrintData_END
+
+PrintData_16
+        BLEQ    Print16
+        MOV     r0, #'h'
+        B       PrintData_PutFormatSign
+
+PrintData_10
+        BLEQ    Print10
+        B       PrintData_END
+
+PrintData_2
+        BLEQ    Print2
+        MOV     r0, #'b'
+        B       PrintData_PutFormatSign
+
+PrintData_PutFormatSign
+        LDR     r1, =SendChar
+        STR     r0, [r1]
+        WriteC
+
+PrintData_END
 		LDMFD   r13!, {r0-r12,r14}
 		MOV		pc, r14	
 
