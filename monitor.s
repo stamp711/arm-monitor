@@ -66,7 +66,7 @@ L1      BL      Getline
 
 ;//--------------------------------
 ;//COMMAND: 'E'
-://AUTHOR: APRICITY
+;//AUTHOR: APRICITY
 Next0
         CMP     r1, #0x45		;//'E'=0x45
         BNE     Next1
