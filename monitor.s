@@ -4,7 +4,8 @@
 		EXPORT 	SendChar
 		EXTERN	r14tmp
 ;//******************************************************
-;//                      Wei Zhao                       *
+;//                  FROM: Wei Zhao                     *
+;//                   BY: APRICITY                      *
 ;//******************************************************
 
 ;// This is a template for the monitor project
