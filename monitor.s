@@ -359,7 +359,7 @@ Print2_Loop
         WriteC
         CMP     r2, #0
         BEQ     Print2_PutFormatSign
-        MOVS    r4, r2, LSL #30
+        MOVS    r4, r2, LSL #29
         BNE     Print2_Loop
         MOV     r0, #"_"
         STR     r0, [r1]
