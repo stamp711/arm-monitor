@@ -155,6 +155,7 @@ M_1
 		ADD		r2, r2, #4
 M_getdata
 		STR		r2, [r1]
+        MOV		r7, r2
 		LDR    	r2, [r2]		;//get 32bits data store in [r2]
 		LDR		r1, EndianType
 M_print
@@ -183,6 +184,10 @@ M_print
 M_3
         MOV     r0, r2
         BL      PrintData
+        LDR     r3, =Messages4
+        BL      PrintNextMessage
+        MOV     r0, r7
+        BL      Print16
 
 M_end
 		LDR		r3, =Messages2
@@ -231,6 +236,11 @@ m_use_spec_addr
 m_getdata
         LDRB    r0, [r2]        ;// get byte stored in address [r2]
         BL      PrintData
+m_printaddress
+        LDR     r3, =Messages4
+        BL      PrintNextMessage
+        MOV     r0, r2
+        BL      Print16
 
 m_end
         LDR     r3, =Messages2
@@ -370,7 +380,10 @@ Messages2
 		ALIGN
 Messages3
 		= "Write Data!"
-		ALIGN									
+		ALIGN
+Messages4
+        = " @ 0x"
+        ALIGN
 StackBtm
         %        0x1000 
 StackTop
