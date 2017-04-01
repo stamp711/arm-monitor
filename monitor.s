@@ -183,10 +183,11 @@ M_print
 		
 M_3
         MOV     r0, r2
-        BL      PrintData
+        BL      PrintWord
         LDR     r3, =Messages4
         BL      PrintNextMessage
         MOV     r0, r7
+		MOV		r2, #0
         BL      Print16
 
 M_end
@@ -235,11 +236,12 @@ m_use_spec_addr
 
 m_getdata
         LDRB    r0, [r2]        ;// get byte stored in address [r2]
-        BL      PrintData
+        BL      PrintWord
 m_printaddress
         LDR     r3, =Messages4
         BL      PrintNextMessage
         MOV     r0, r2
+		MOV		r2, #0
         BL      Print16
 
 m_end
@@ -310,17 +312,20 @@ Print16
         MOV     r3, r0
         LDR     r1, =SendChar
 
-        CMP     r2, #0
+        CMP     r2, #0              ;// r2 == 0 -> print word
         MOVEQ   r2, #32
-        MOVBE   r2, #8
+        MOVNE   r2, #8              ;// r2 != 0 -> print byte
 Print16_Loop
-        SUB     r2, #4
-        LSR     r0, r3, r2
-        BIC     r0, #0x000F
+        SUB     r2, r2, #4
+        MOV     r0, r3, LSR r2
+        AND     r0, r0, #0xF
+        CMP     r0, #9              ;// convert to ascii
+        ADDGT   r0, r0, #"A"-10
+        ADDLE   r0, r0, #"0"
         STR     r0, [r1]
         WriteC
         CMP     r2, #0
-        BNE     Print16_loop
+        BNE     Print16_Loop
 Print16_PutFormatSign
         MOV     r0, #'h'
         STR     r0, [r1]
