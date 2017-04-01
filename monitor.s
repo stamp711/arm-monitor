@@ -376,6 +376,38 @@ Print2_End
 ;//----------------------------------------------------------------
 Print10
 		STMFD	r13!, {r0-r12,r14}
+        MOV     r3, r0
+        LDR     r1, =SendChar
+        LDR     r2, =0xCCCCCCCD
+        MOV     r7, #0              ;// Counter
+
+DivedeBy10  ;// https://community.arm.com/processors/b/blog/posts/divide-and-conquer
+        UMULL   r5, r4, r2, r3      ;// Hack: r3 / 10
+        MOV     r4, r4, LSR #3      ;// r4 is the quotient
+        MOV     r8, r4, LSL #1      ;// r8 = r4 * 2
+        ADD     r8, r8, r4, LSL #3  ;// r8 = r8 + r4 *8
+        SUB     r0, r3, r8          ;// r0 = r3 - r8 is the remainder
+        ADD     r0, r0, #"0"
+        STMFD   r13!, {r0}
+        ADD     r7, r7, #1
+        MOVS    r3, r4
+        BNE     DivedeBy10
+
+Print10_Loop
+        LDMFD   r13!, {r0}
+        STR     r0, [r1]
+        WriteC
+        SUBS    r7, r7, #1
+        BEQ     Print10_PutFormatSign
+        B       Print10_Loop
+Print10_PutFormatSign
+        MOV     r0, #'u'
+        STR     r0, [r1]
+        WriteC
+        MOV     r0, #'d'
+        STR     r0, [r1]
+        WriteC
+Print10_End
 		LDMFD	r13!, {r0-r12,r14}
 		MOV		pc, r14
 
