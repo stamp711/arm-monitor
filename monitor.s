@@ -287,72 +287,59 @@ NxtTxt	LDRB	r1, [r3], #1		;//get next character
 		MOV		pc, r14
 
 ;//----------------------------------------------------------------
-
-Print10		;//output the string of a number at r0 in DEC format
+PrintWord
 		STMFD	r13!, {r0-r12,r14}
+        MOV     r2, #0              ;// set word mode
+		LDR		r1, DataFormat
+        ;// Hex
+		CMP		r1, #16
+		BLEQ    Print16
 
-		;//Task5: You have to implement Print10 function here	
-		
-		LDMFD   r13!, {r0-r12,r14}
-		MOV		pc, r14		
-
-
-Print16		;//output the string of a number at r0 in HEX format
-		STMFD	r13!, {r0-r12,r14}
-		MOV		r3, r0
-		MOV		r4, #8				;//nibble count = 8
-		LDR		r1, =SendChar
-LoopPrint16
-		MOV		r0, r3, LSR #28		;//get top nibble
-		CMP		r0, #9				;//0-9 or A-F
-		ADDGT	r0, r0, #"A"-10		;//ASCII alphabetic
-		ADDLE	r0, r0, #"0"		;//ASCI numeric
-		STR		r0, [r1]			;//store character to print
-		WriteC						;//print character
-		MOV		r3, r3, LSL #4		;//shift left one nibble
-		SUBS	r4, r4, #1			;//decrement nibble count
-		BNE		LoopPrint16			;//if more do next nibble
-		LDMFD   r13!, {r0-r12,r14}
-		MOV		pc, r14
-
-Print2		;//output the string of a 32 bits number at r0 in bin format
-		STMFD	r13!, {r0-r12,r14}
-		;//Task6: You have to implement Print2 function here		
-
-		LDMFD   r13!, {r0-r12,r14}
-		MOV		pc, r14
-
-
-;//--------------------------------
-PrintData       ;//output the string of a number at r0 in given format
-		STMFD   r13!, {r0-r12,r14}
-
-        LDR     r1, DataFormat
-        CMP     r1, #16
-        BEQ     PrintData_16
         CMP     r1, #10
-        BEQ     PrintData_10
-        CMP     r1, #2
-        BEQ     PrintData_2
-        B       PrintData_END
-PrintData_16
-        BLEQ    Print16
-        MOV     r0, #'h'
-        B       PrintData_PutFormatSign
-PrintData_10
         BLEQ    Print10
-        B       PrintData_END
-PrintData_2
+
+        CMP     r1, #2
         BLEQ    Print2
-        MOV     r0, #'b'
-        B       PrintData_PutFormatSign
-PrintData_PutFormatSign
+        
+        LDMFD   r13!, {r0-r12,r14}
+        MOV     pc, r14
+
+;//----------------------------------------------------------------
+Print16
+        STMFD   r13!, {r0-r12,r14}
+        MOV     r3, r0
         LDR     r1, =SendChar
+
+        CMP     r2, #0
+        MOVEQ   r2, #32
+        MOVBE   r2, #8
+Print16_Loop
+        SUB     r2, #4
+        LSR     r0, r3, r2
+        BIC     r0, #0x000F
         STR     r0, [r1]
         WriteC
-PrintData_END
-		LDMFD   r13!, {r0-r12,r14}
-		MOV		pc, r14	
+        CMP     r2, #0
+        BNE     Print16_loop
+Print16_PutFormatSign
+        MOV     r0, #'h'
+        STR     r0, [r1]
+        WriteC
+Print16_End
+        LDMFD   r13!, {r0-r12,r14}
+        MOV     pc, r14
+
+;//----------------------------------------------------------------
+Print2
+		STMFD	r13!, {r0-r12,r14}
+		LDMFD	r13!, {r0-r12,r14}
+		MOV		pc, r14
+
+;//----------------------------------------------------------------
+Print10
+		STMFD	r13!, {r0-r12,r14}
+		LDMFD	r13!, {r0-r12,r14}
+		MOV		pc, r14
 
 
 ;//----------------------------------------------------------------
