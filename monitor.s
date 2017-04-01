@@ -236,7 +236,7 @@ m_use_spec_addr
 
 m_getdata
         LDRB    r0, [r2]        ;// get byte stored in address [r2]
-        BL      PrintWord
+        BL      PrintByte
 m_printaddress
         LDR     r3, =Messages4
         BL      PrintNextMessage
@@ -292,6 +292,12 @@ NxtTxt	LDRB	r1, [r3], #1		;//get next character
 PrintWord
 		STMFD	r13!, {r0-r12,r14}
         MOV     r2, #0              ;// set word mode
+        B       PrintGO
+PrintByte
+        STMFD   r13!, {r0-r12,r14}
+        MOV     r2, #1
+        B       PrintGO
+PrintGO
 		LDR		r1, DataFormat
         ;// Hex
 		CMP		r1, #16
@@ -337,6 +343,33 @@ Print16_End
 ;//----------------------------------------------------------------
 Print2
 		STMFD	r13!, {r0-r12,r14}
+        MOV     r3, r0
+        LDR     r1, =SendChar
+
+        CMP     r2, #0
+        MOVEQ   r2, #32
+        MOVNE   r2, #8
+Print2_Loop
+        SUB     r2, r2, #1
+        MOV     r0, r3, LSR r2
+        ANDS    r0, r0, #0x1
+        MOVEQ   r0, #"0"
+        MOVNE   r0, #"1"
+        STR     r0, [r1]
+        WriteC
+        CMP     r2, #0
+        BEQ     Print2_PutFormatSign
+        MOVS    r4, r2, LSL #30
+        BNE     Print2_Loop
+        MOV     r0, #"_"
+        STR     r0, [r1]
+        WriteC
+        B       Print2_Loop
+Print2_PutFormatSign
+        MOV     r0, #'b'
+        STR     r0, [r1]
+        WriteC
+Print2_End
 		LDMFD	r13!, {r0-r12,r14}
 		MOV		pc, r14
 
