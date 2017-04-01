@@ -210,7 +210,7 @@ Next4
         B       InvalidComm
 
 m_overwrite
-        STR     r4, [r3]
+        STRB    r4, [r3]
         LDR     r3, =Messages3
         BL      PrintNextMessage
         B       m_end
