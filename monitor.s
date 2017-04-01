@@ -55,7 +55,7 @@ L1      BL      Getline
 ;// OK start your code here
 
 
-;//--------------------------------
+;//----------------------------------------------------------------
 ;//COMMAND: 'Q'
 		CMP		r1, #0x51		;//'Q'=0x51
 		BNE		Next0
@@ -64,7 +64,7 @@ L1      BL      Getline
 		B		MonQuit
 
 
-;//--------------------------------
+;//----------------------------------------------------------------
 ;//COMMAND: 'E'
 ;//AUTHOR: APRICITY
 Next0
@@ -92,7 +92,7 @@ E_end
         B       Continue
 
 
-;//--------------------------------
+;//----------------------------------------------------------------
 ;//COMMAND: 'D'
 Next1
 		CMP		r1, #0x44		;//'D'=0x44
@@ -115,7 +115,7 @@ D_end
 		B		Continue
 		
 
-;//--------------------------------
+;//----------------------------------------------------------------
 ;//COMMAND: 'C'
 Next2
 		CMP		r1, #0x43		;//'C'=0x43
@@ -123,7 +123,7 @@ Next2
 		;//Task2: You have to implement COMMAND 'C' here
         
 
-;//--------------------------------
+;//----------------------------------------------------------------
 ;//COMMAND: 'M'
 Next3
 		CMP		r1, #0x4D		;//'M'=0x4D
@@ -190,7 +190,7 @@ M_end
 		B Continue
 
 
-;//--------------------------------
+;//----------------------------------------------------------------
 ;//COMMAND: 'm'
 ;//AUTHOR: APRICITY
 Next4
@@ -237,7 +237,7 @@ m_end
         B       Continue
 
 
-;//--------------------------------
+;//----------------------------------------------------------------
 ;//COMMAND: 'R' or 'r'
 Next5
 		CMP		r1, #0x52		;//'R'=0x52
@@ -246,12 +246,12 @@ Next5
 		;//Task4: You have to implement COMMAND 'R' and 'r' here		
 
 
-;//--------------------------------
+;//----------------------------------------------------------------
 ;//more commands can be added here
 Next6
 
 
-;//--------------------------------
+;//----------------------------------------------------------------
 InvalidComm
 		LDR		r3, =Messages1
 		BL		PrintNextMessage
@@ -274,6 +274,8 @@ NxtTxt	LDRB	r1, [r3], #1		;//get next character
 		BNE		NxtTxt				;//..and loop
 		LDMFD   r13!, {r0-r12,r14}
 		MOV		pc, r14
+
+;//----------------------------------------------------------------
 
 Print10		;//output the string of a number at r0 in DEC format
 		STMFD	r13!, {r0-r12,r14}
@@ -322,34 +324,27 @@ PrintData       ;//output the string of a number at r0 in given format
         CMP     r1, #2
         BEQ     PrintData_2
         B       PrintData_END
-
 PrintData_16
         BLEQ    Print16
         MOV     r0, #'h'
         B       PrintData_PutFormatSign
-
 PrintData_10
         BLEQ    Print10
         B       PrintData_END
-
 PrintData_2
         BLEQ    Print2
         MOV     r0, #'b'
         B       PrintData_PutFormatSign
-
 PrintData_PutFormatSign
         LDR     r1, =SendChar
         STR     r0, [r1]
         WriteC
-
 PrintData_END
 		LDMFD   r13!, {r0-r12,r14}
 		MOV		pc, r14	
 
 
-
-
-
+;//----------------------------------------------------------------
 StackInit
         DCD     StackTop
 
