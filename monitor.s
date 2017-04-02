@@ -265,6 +265,7 @@ Next5
         B       InvalidComm
 
 R_Modify
+        MOV     r12, r13
         CMP     r3, #0
         BLT     InvalidComm     ;// r3 < 0 -> invalid
         CMP     r3, #12
@@ -275,8 +276,6 @@ R_Modify
         BEQ     R_Modify_14
         CMP     r3, #15
         BEQ     R_Modify_PC
-        CMP     r3, #16
-        BEQ     R_Modify_CPSR
         B       InvalidComm
 R_Modify_0To12
         ADRL    r2, StackInit
@@ -285,26 +284,27 @@ R_Modify_0To12
         ADD     r2, r2, r3, LSL #2
         STR     r4, [r2]
         B       R_Modify_End
+R_Modify_13
+        STMFD   r12!, {r4}
+        LDMFD   r12!, {r13}^
+        B       R_Modify_End
+R_Modify_14
+        STMFD   r12!, {r4}
+        LDMFD   r12!, {r14}^
+        B       R_Modify_End
+R_Modify_PC
+        LDR     r1, =r14tmp
+        STR     r4, [r1]
+        B       R_Modify_End
 R_Modify_End
         LDR     r3, =Messages3
         BL      PrintNextMessage
         LDR     r3, =Messages2
         BL      PrintNextMessage
         B       R_End
-R_Modify_13
-        STMFD   r13!, {r4}
-        LDMFD   r13!, {r13}^
-        B       R_Modify_End
-R_Modify_14
-        STMFD   r13!, {r4}
-        LDMFD   r13!, {r14}^
-        B       R_Modify_End
-R_Modify_PC
-        LDR     r1, =r14tmp
-        STR     r0, [r1]
-        B       R_Modify_End
 
 R_PrintAll
+        MOV     r12, r13
         ADRL    r2, StackInit
         LDR     r2, [r2]        ;// address of r0-r12 storage
         SUB     r2, r2, #14*4
@@ -323,16 +323,16 @@ R_0To12
 R_13
         MOV     r4, #13
         BL      PrintRegNumber
-        STMFD   r13!, {sp}^
-        LDMFD   r13!, {r0}
+        STMFD   r12!, {sp}^
+        LDMFD   r12!, {r0}
         BL      PrintWord
         LDR     r3, =Messages2
         BL      PrintNextMessage
 R_14
         MOV     r4, #14
         BL      PrintRegNumber
-        STMFD   r13!, {lr}^
-        LDMFD   r13!, {r0}
+        STMFD   r12!, {lr}^
+        LDMFD   r12!, {r0}
         BL      PrintWord
         LDR     r3, =Messages2
         BL      PrintNextMessage
@@ -344,7 +344,7 @@ R_PC
         BL      PrintWord
         LDR     r3, =Messages2
         BL      PrintNextMessage
-R_SPSR
+R_CPSR
         MOV     r4, #16
         BL      PrintRegNumber
         MRS     r0, SPSR
