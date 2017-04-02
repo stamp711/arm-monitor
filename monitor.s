@@ -188,7 +188,7 @@ M_3
         BL      PrintNextMessage
         MOV     r0, r7
 		MOV		r2, #0
-        BL      Print16
+        BL      PrintAddress
 
 M_end
 		LDR		r3, =Messages2
@@ -241,8 +241,7 @@ m_printaddress
         LDR     r3, =Messages4
         BL      PrintNextMessage
         MOV     r0, r2
-		MOV		r2, #0
-        BL      Print16
+        BL      PrintAddress
 
 m_end
         LDR     r3, =Messages2
@@ -256,7 +255,31 @@ Next5
 		CMP		r1, #0x52		;//'R'=0x52
 		CMPNE	r1, #0x72		;//'r'=0x72
 		BNE		Next6
-		;//Task4: You have to implement COMMAND 'R' and 'r' here		
+
+        ADRL    r2, StackInit
+        LDR     r2, [r2]
+        SUB     r2, r2, #14*4
+        MOV     r4, #0
+
+R_0To12
+        BL      PrintRegNumber
+        LDR     r0, [r2]
+        BL      PrintWord
+        LDR     r3, =Messages2
+        BL      PrintNextMessage
+
+        ADD     r2, r2, #4
+        ADD     r4, r4, #1
+        CMP     r4, #13
+        BNE     R_0To12
+
+R_SPSR
+        MRS     r0, SPSR
+        BL      PrintWord
+        LDR     r3, =Messages2
+        BL      PrintNextMessage
+R_End
+        B       Continue
 
 
 ;//----------------------------------------------------------------
@@ -288,17 +311,69 @@ NxtTxt	LDRB	r1, [r3], #1		;//get next character
 		LDMFD   r13!, {r0-r12,r14}
 		MOV		pc, r14
 
+PrintRegNumber                      ;// in r4
+		STMFD	r13!, {r0-r12,r14}
+        LDR     r1, =SendChar
+
+        MOV     r0, #"r"
+        STR     r0, [r1]
+        WriteC
+
+        MOV     r0, r4
+        BL      Print10
+
+        CMP     r4, #9
+        BLE     PrintRegNumber_Extra
+PrintRegNumber_Mark
+		MOV     r0, #":"
+        STR     r0, [r1]
+        WriteC
+
+        MOV     r0, #" "
+        STR     r0, [r1]
+        WriteC
+
+        LDMFD   r13!, {r0-r12,r14}
+		MOV		pc, r14
+PrintRegNumber_Extra
+        MOV     r0, #" "
+        STR     r0, [r1]
+        WriteC
+        B       PrintRegNumber_Mark
+
 ;//----------------------------------------------------------------
 PrintWord
 		STMFD	r13!, {r0-r12,r14}
+		LDR		r1, DataFormat
         MOV     r2, #0              ;// set word mode
+		MOV		r3, #1				;// put format sign
         B       PrintGO
 PrintByte
         STMFD   r13!, {r0-r12,r14}
-        MOV     r2, #1
-        B       PrintGO
-PrintGO
 		LDR		r1, DataFormat
+        MOV     r2, #1
+		MOV		r3, #1				;// put format sign
+        B       PrintGO
+PrintWordPlain
+		STMFD	r13!, {r0-r12,r14}
+		LDR		r1, DataFormat
+        MOV     r2, #0              ;// set word mode
+		MOV		r3, #0				;// don't put format sign
+        B       PrintGO
+PrintBytePlain
+		STMFD	r13!, {r0-r12,r14}
+		LDR		r1, DataFormat
+        MOV     r2, #1
+		MOV		r3, #0				;// don't put format sign
+        B       PrintGO
+PrintAddress
+		STMFD	r13!, {r0-r12,r14}
+		MOV		r1, #16
+        MOV     r2, #0
+		MOV		r3, #0				;// don't put format sign
+        B       PrintGO
+
+PrintGO
         ;// Hex
 		CMP		r1, #16
 		BLEQ    Print16
@@ -309,7 +384,28 @@ PrintGO
         CMP     r1, #2
         BLEQ    Print2
         
+		CMP		r3, #1
+		BLEQ	PrintFormatSign
+
         LDMFD   r13!, {r0-r12,r14}
+        MOV     pc, r14
+
+;//----------------------------------------------------------------
+PrintFormatSign
+		STMFD   r13!, {r0-r12,r14}
+		
+		LDR		r1, DataFormat
+		CMP		r1, #16
+        MOVEQ   r0, #"h"
+		CMP		r1, #10
+		MOVEQ	r0, #"d"
+		CMP		r1, #2
+		MOVEQ	r0, #"b"
+		LDR     r1, =SendChar
+        STR     r0, [r1]
+        WriteC
+
+		LDMFD   r13!, {r0-r12,r14}
         MOV     pc, r14
 
 ;//----------------------------------------------------------------
@@ -332,10 +428,6 @@ Print16_Loop
         WriteC
         CMP     r2, #0
         BNE     Print16_Loop
-Print16_PutFormatSign
-        MOV     r0, #'h'
-        STR     r0, [r1]
-        WriteC
 Print16_End
         LDMFD   r13!, {r0-r12,r14}
         MOV     pc, r14
@@ -358,17 +450,13 @@ Print2_Loop
         STR     r0, [r1]
         WriteC
         CMP     r2, #0
-        BEQ     Print2_PutFormatSign
+        BEQ     Print2_End
         MOVS    r4, r2, LSL #29
         BNE     Print2_Loop
         MOV     r0, #"_"
         STR     r0, [r1]
         WriteC
         B       Print2_Loop
-Print2_PutFormatSign
-        MOV     r0, #'b'
-        STR     r0, [r1]
-        WriteC
 Print2_End
 		LDMFD	r13!, {r0-r12,r14}
 		MOV		pc, r14
@@ -398,15 +486,8 @@ Print10_Loop
         STR     r0, [r1]
         WriteC
         SUBS    r7, r7, #1
-        BEQ     Print10_PutFormatSign
+        BEQ     Print10_End
         B       Print10_Loop
-Print10_PutFormatSign
-        MOV     r0, #'u'
-        STR     r0, [r1]
-        WriteC
-        MOV     r0, #'d'
-        STR     r0, [r1]
-        WriteC
 Print10_End
 		LDMFD	r13!, {r0-r12,r14}
 		MOV		pc, r14
