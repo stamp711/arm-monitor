@@ -264,10 +264,45 @@ Next5
 
         B       InvalidComm
 
+R_Modify
+        CMP     r3, #0
+        BLT     InvalidComm     ;// r3 < 0 -> invalid
+        CMP     r3, #12
+        BLE     R_Modify_0To12  ;// 0 <= r3 <= 1
+        CMP     r3, #13
+        BEQ     R_Modify_13
+        CMP     r3, #14
+        BEQ     R_Modify_14
+        CMP     r3, #15
+        BEQ     R_Modify_PC
+        CMP     r3, #16
+        BEQ     R_Modify_CPSR
+        B       InvalidComm
+R_Modify_0To12
         ADRL    r2, StackInit
-        LDR     r2, [r2]
+        LDR     r2, [r2]        ;// address of r0-r12 storage
         SUB     r2, r2, #14*4
-        MOV     r4, #0
+        ADD     r2, r2, r3, LSL #2
+        STR     r4, [r2]
+        B       R_Modify_End
+R_Modify_End
+        LDR     r3, =Messages3
+        BL      PrintNextMessage
+        LDR     r3, =Messages2
+        BL      PrintNextMessage
+        B       R_End
+R_Modify_13
+        STMFD   r13!, {r4}
+        LDMFD   r13!, {r13}^
+        B       R_Modify_End
+R_Modify_14
+        STMFD   r13!, {r4}
+        LDMFD   r13!, {r14}^
+        B       R_Modify_End
+R_Modify_PC
+        LDR     r1, =r14tmp
+        STR     r0, [r1]
+        B       R_Modify_End
 
 R_PrintAll
         ADRL    r2, StackInit
