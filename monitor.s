@@ -256,11 +256,24 @@ Next5
 		CMPNE	r1, #0x72		;//'r'=0x72
 		BNE		Next6
 
+        CMP     r2, #0
+        BEQ     R_PrintAll
+
+        CMP     r2, #2
+        BEQ     R_Modify
+
+        B       InvalidComm
+
         ADRL    r2, StackInit
         LDR     r2, [r2]
         SUB     r2, r2, #14*4
         MOV     r4, #0
 
+R_PrintAll
+        ADRL    r2, StackInit
+        LDR     r2, [r2]        ;// address of r0-r12 storage
+        SUB     r2, r2, #14*4
+        MOV     r4, #0          ;// reg number
 R_0To12
         BL      PrintRegNumber
         LDR     r0, [r2]
@@ -272,8 +285,33 @@ R_0To12
         ADD     r4, r4, #1
         CMP     r4, #13
         BNE     R_0To12
-
+R_13
+        MOV     r4, #13
+        BL      PrintRegNumber
+        STMFD   r13!, {sp}^
+        LDMFD   r13!, {r0}
+        BL      PrintWord
+        LDR     r3, =Messages2
+        BL      PrintNextMessage
+R_14
+        MOV     r4, #14
+        BL      PrintRegNumber
+        STMFD   r13!, {lr}^
+        LDMFD   r13!, {r0}
+        BL      PrintWord
+        LDR     r3, =Messages2
+        BL      PrintNextMessage
+R_PC
+        MOV     r4, #15
+        BL      PrintRegNumber
+        LDR     r1, =r14tmp
+        LDR     r0, [r1]
+        BL      PrintWord
+        LDR     r3, =Messages2
+        BL      PrintNextMessage
 R_SPSR
+        MOV     r4, #16
+        BL      PrintRegNumber
         MRS     r0, SPSR
         BL      PrintWord
         LDR     r3, =Messages2
@@ -314,6 +352,9 @@ NxtTxt	LDRB	r1, [r3], #1		;//get next character
 PrintRegNumber                      ;// in r4
 		STMFD	r13!, {r0-r12,r14}
         LDR     r1, =SendChar
+        
+        CMP     r4, #16
+        BEQ     PrintRegCPSR
 
         MOV     r0, #"r"
         STR     r0, [r1]
@@ -322,19 +363,36 @@ PrintRegNumber                      ;// in r4
         MOV     r0, r4
         BL      Print10
 
+        MOV     r0, #" "
+        STR     r0, [r1]
+        WriteC
+
         CMP     r4, #9
         BLE     PrintRegNumber_Extra
 PrintRegNumber_Mark
 		MOV     r0, #":"
         STR     r0, [r1]
         WriteC
-
         MOV     r0, #" "
         STR     r0, [r1]
         WriteC
 
         LDMFD   r13!, {r0-r12,r14}
 		MOV		pc, r14
+PrintRegCPSR
+        MOV     r0, #"C"
+        STR     r0, [r1]
+        WriteC
+        MOV     r0, #"P"
+        STR     r0, [r1]
+        WriteC
+        MOV     r0, #"S"
+        STR     r0, [r1]
+        WriteC
+        MOV     r0, #"R"
+        STR     r0, [r1]
+        WriteC
+        B       PrintRegNumber_Mark
 PrintRegNumber_Extra
         MOV     r0, #" "
         STR     r0, [r1]
