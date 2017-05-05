@@ -9,11 +9,11 @@
 
 ## Commands
 
-| Command | arg1          | arg2        | arg3       | Description                                                                 |
-| ------- | ------------- | ----------- | ---------- | --------------------------------------------------------------------------- |
-| `M`     | `{<address>}` | `{<value>}` |            | Display the contents of the memory word                                     |
-| `m`     | `{<address>}` | `{<value>}` |            | Display the contents of the memory byte                                     |
-| `R/r`   | `{<number>}`  | `{<value>}` |            | Display the contents of the specified register                              |
-| `C`     | `<source>`    | `<dest>`    | `<length>` | Copy a memory block                                                         |
-| `E`     | `{0/1}`       |             |            | Change the data endian representation to either little-endian or big-endian |
-| `D`     | `{10/16/2}`   |             |            | Change the display of memory/register to decimal, hexadecimal or binary     |
+| Command |     Arg1      |    Arg2     |    Arg3    | Description                                                                 |
+| :-----: | :-----------: | :---------: | :--------: | --------------------------------------------------------------------------- |
+|   `M`   | `{<address>}` | `{<value>}` |            | Display the contents of the memory word                                     |
+|   `m`   | `{<address>}` | `{<value>}` |            | Display the contents of the memory byte                                     |
+|  `R/r`  | `{<number>}`  | `{<value>}` |            | Display the contents of the specified register                              |
+|   `C`   |  `<source>`   |  `<dest>`   | `<length>` | Copy a memory block                                                         |
+|   `E`   |    `{0/1}`    |             |            | Change the data endian representation to either little-endian or big-endian |
+|   `D`   |  `{10/16/2}`  |             |            | Change the display of memory/register to decimal, hexadecimal or binary     |
