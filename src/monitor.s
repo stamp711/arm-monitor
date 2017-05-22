@@ -1,8 +1,8 @@
         AREA Monitor1, CODE,READONLY
         IMPORT  Getline
-		EXPORT	Monitor
-		EXPORT 	SendChar
-		EXTERN	r14tmp
+        EXPORT  Monitor
+        EXPORT  SendChar
+        EXTERN  r14tmp
 ;//******************************************************
 ;//                  FROM: Wei Zhao                     *
 ;//                   BY: APRICITY                      *
@@ -42,9 +42,9 @@ $l      MOV     r0, #0x7        ;//select Angel SYS_READC function
 Monitor
 
 ;// First load the stack pointer (you might want to improve it)
-	    ADRL    r13, StackInit
+        ADRL    r13, StackInit
         LDR     r13, [r13]
-		STMFD   r13!, {r0-r12,r14}	;//save reg to stack
+        STMFD   r13!, {r0-r12,r14}  ;//save reg to stack
 
 ;// call the Getline routine like this
 L1      BL      Getline
@@ -58,18 +58,18 @@ L1      BL      Getline
 
 ;//----------------------------------------------------------------
 ;//COMMAND: 'Q'
-		CMP		r1, #0x51		;//'Q'=0x51
-		BNE		Next0
-		CMP		r2, #0
-		BNE		InvalidComm
-		B		MonQuit
+        CMP     r1, #0x51       ;//'Q'=0x51
+        BNE     Next0
+        CMP     r2, #0
+        BNE     InvalidComm
+        B       MonQuit
 
 
 ;//----------------------------------------------------------------
 ;//COMMAND: 'E'
 ;//AUTHOR: APRICITY
 Next0
-        CMP     r1, #0x45		;//'E'=0x45
+        CMP     r1, #0x45       ;//'E'=0x45
         BNE     Next1
         CMP     r2, #0
         BEQ     E_0para
@@ -78,16 +78,16 @@ Next0
         B       InvalidComm
 E_0para
         LDR     r3, EndianType
-		CMP     r3, #0
-		MOVEQ   r3, #1
-		MOVNE   r3, #0
-		B       E_end
+        CMP     r3, #0
+        MOVEQ   r3, #1
+        MOVNE   r3, #0
+        B       E_end
 E_1para
         CMP     r3, #0
-		BEQ     E_end
-		CMP     r3, #1
-		BEQ     E_end
-		B       InvalidComm
+        BEQ     E_end
+        CMP     r3, #1
+        BEQ     E_end
+        B       InvalidComm
 E_end
         STR     r3, EndianType
         B       Continue
@@ -96,113 +96,113 @@ E_end
 ;//----------------------------------------------------------------
 ;//COMMAND: 'D'
 Next1
-		CMP		r1, #0x44		;//'D'=0x44
-		BNE		Next2
-		CMP		r2, #1
-		BNE		InvalidComm
-		CMP		r3, #0x10
-		BNE		D_1
-		MOV		r3, #10
-		B		D_end
-D_1		CMP		r3, #0x16
-		BNE		D_2
-		MOV		r3, #16
-		B		D_end
-D_2		CMP		r3, #0x2
-		BNE		InvalidComm
-		MOV		r3, #2
+        CMP     r1, #0x44       ;//'D'=0x44
+        BNE     Next2
+        CMP     r2, #1
+        BNE     InvalidComm
+        CMP     r3, #0x10
+        BNE     D_1
+        MOV     r3, #10
+        B       D_end
+D_1     CMP     r3, #0x16
+        BNE     D_2
+        MOV     r3, #16
+        B       D_end
+D_2     CMP     r3, #0x2
+        BNE     InvalidComm
+        MOV     r3, #2
 D_end
-		STR		r3,DataFormat
-		B		Continue
-		
+        STR     r3,DataFormat
+        B       Continue
+        
 
 ;//----------------------------------------------------------------
 ;//COMMAND: 'C'
 Next2
-		CMP		r1, #0x43		;//'C'=0x43
-		BNE		Next3
-		;//Task2: You have to implement COMMAND 'C' here
+        CMP     r1, #0x43       ;//'C'=0x43
+        BNE     Next3
+        ;//Task2: You have to implement COMMAND 'C' here
         
 
 ;//----------------------------------------------------------------
 ;//COMMAND: 'M'
 Next3
-		CMP		r1, #0x4D		;//'M'=0x4D
-		BNE		Next4
+        CMP     r1, #0x4D       ;//'M'=0x4D
+        BNE     Next4
 
-		MOV		r3, r3, LSR #2
-		MOV		r3, r3, LSL #2
+        MOV     r3, r3, LSR #2
+        MOV     r3, r3, LSL #2
 
-		CMP		r2, #0
-		BEQ		M_1
-		
-		CMP		r2, #1
-		BNE		M_2
-		LDR		r1, =MAddr
-		MOV		r2, r3
-		B 		M_getdata
-M_2	
-		CMP		r2, #2
-		BNE		InvalidComm
-		
-		STR		r4, [r3]
-		LDR		r3, =Messages3
-		BL		PrintNextMessage
-		B		M_end		
-M_1		
-		LDR		r1, =MAddr		
-		LDR	    r2, [r1]
-		ADD		r2, r2, #4
+        CMP     r2, #0
+        BEQ     M_1
+        
+        CMP     r2, #1
+        BNE     M_2
+        LDR     r1, =MAddr
+        MOV     r2, r3
+        B       M_getdata
+M_2
+        CMP     r2, #2
+        BNE     InvalidComm
+        
+        STR     r4, [r3]
+        LDR     r3, =Messages3
+        BL      PrintNextMessage
+        B       M_end
+M_1
+        LDR     r1, =MAddr
+        LDR     r2, [r1]
+        ADD     r2, r2, #4
 M_getdata
-		STR		r2, [r1]
-        MOV		r7, r2
-		LDR    	r2, [r2]		;//get 32bits data store in [r2]
-		LDR		r1, EndianType
+        STR     r2, [r1]
+        MOV     r7, r2
+        LDR     r2, [r2]        ;//get 32bits data store in [r2]
+        LDR     r1, EndianType
 M_print
-		CMP		r1, #0
-		BEQ		M_3
-		MOV		r3, r2, lsr #24
-		AND		r3, r3, #0x0ff
-		
-		MOV		r4, r2, lsr #16
-		AND		r4, r4, #0x0ff
-		MOV		r4, r4, lsl #8
-		
-		MOV		r5, r2, lsr #8	
-		AND		r5, r5, #0x0ff
-		MOV		r5, r5, lsl #16
-				
-		AND		r6, r2, #0x0ff
-		MOV		r6, r6, lsl #24
-		
-		MOV 	r2, #0
-		ORR		r2, r2, r6
-		ORR		r2, r2, r5
-		ORR		r2, r2, r4
-		ORR		r2, r2, r3	
-		
+        CMP     r1, #0
+        BEQ     M_3
+        MOV     r3, r2, lsr #24
+        AND     r3, r3, #0x0ff
+        
+        MOV     r4, r2, lsr #16
+        AND     r4, r4, #0x0ff
+        MOV     r4, r4, lsl #8
+        
+        MOV     r5, r2, lsr #8
+        AND     r5, r5, #0x0ff
+        MOV     r5, r5, lsl #16
+                
+        AND     r6, r2, #0x0ff
+        MOV     r6, r6, lsl #24
+        
+        MOV     r2, #0
+        ORR     r2, r2, r6
+        ORR     r2, r2, r5
+        ORR     r2, r2, r4
+        ORR     r2, r2, r3
+        
 M_3
         MOV     r0, r2
         BL      PrintWord
         LDR     r3, =Messages4
         BL      PrintNextMessage
         MOV     r0, r7
-		MOV		r2, #0
+        MOV     r2, #0
         BL      PrintAddress
 
 M_end
-		LDR		r3, =Messages2
-		BL		PrintNextMessage
+        LDR     r3, =Messages2
+        BL      PrintNextMessage
 
-		B Continue
+        B Continue
 
 
 ;//----------------------------------------------------------------
 ;//COMMAND: 'm'
 ;//AUTHOR: APRICITY
 Next4
-		CMP		r1, #0x6D		;//'m'=0x6D
-		BNE		Next5
+        CMP     r1, #0x6D       ;//'m'=0x6D
+        BNE     Next5
         
         CMP     r2, #0          ;// args = 0, <address> is not specified
         BEQ     m_use_prev_addr ;// use the previous byte address + 1
@@ -252,9 +252,9 @@ m_end
 ;//----------------------------------------------------------------
 ;//COMMAND: 'R' or 'r'
 Next5
-		CMP		r1, #0x52		;//'R'=0x52
-		CMPNE	r1, #0x72		;//'r'=0x72
-		BNE		Next6
+        CMP     r1, #0x52       ;//'R'=0x52
+        CMPNE   r1, #0x72       ;//'r'=0x72
+        BNE     Next6
 
         CMP     r2, #0
         BEQ     R_PrintAll
@@ -362,30 +362,30 @@ Next6
 
 ;//----------------------------------------------------------------
 InvalidComm
-		LDR		r3, =Messages1
-		BL		PrintNextMessage
-		
+        LDR     r3, =Messages1
+        BL      PrintNextMessage
+        
 Continue
         b       L1
 
 MonQuit    
-        ldmfd   r13!, {r0-r12,r14}	;//restore reg from stack
-        mov		pc,r14				;//return to swi or undef
+        ldmfd   r13!, {r0-r12,r14}  ;//restore reg from stack
+        mov     pc,r14              ;//return to swi or undef
 
 
-PrintNextMessage	;//output a string starting at [r3]
-		STMFD	r13!, {r0-r12,r14}
-		MOV		r0, #0x3			;//select Angel SYS_WRITEC function
-NxtTxt	LDRB	r1, [r3], #1		;//get next character
-		CMP		r1, #0				;//test for end mark
-		SUBNE	r1, r3, #1			;//setup r1 for call to SWI
-		SWINE	SWI_ANGEL			;//if not end, print..
-		BNE		NxtTxt				;//..and loop
-		LDMFD   r13!, {r0-r12,r14}
-		MOV		pc, r14
+PrintNextMessage    ;//output a string starting at [r3]
+        STMFD   r13!, {r0-r12,r14}
+        MOV     r0, #0x3            ;//select Angel SYS_WRITEC function
+NxtTxt  LDRB    r1, [r3], #1        ;//get next character
+        CMP     r1, #0              ;//test for end mark
+        SUBNE   r1, r3, #1          ;//setup r1 for call to SWI
+        SWINE   SWI_ANGEL           ;//if not end, print..
+        BNE     NxtTxt              ;//..and loop
+        LDMFD   r13!, {r0-r12,r14}
+        MOV     pc, r14
 
 PrintRegNumber                      ;// in r4
-		STMFD	r13!, {r0-r12,r14}
+        STMFD   r13!, {r0-r12,r14}
         LDR     r1, =SendChar
         
         CMP     r4, #16
@@ -405,7 +405,7 @@ PrintRegNumber                      ;// in r4
         CMP     r4, #9
         BLE     PrintRegNumber_Extra
 PrintRegNumber_Mark
-		MOV     r0, #":"
+        MOV     r0, #":"
         STR     r0, [r1]
         WriteC
         MOV     r0, #" "
@@ -413,7 +413,7 @@ PrintRegNumber_Mark
         WriteC
 
         LDMFD   r13!, {r0-r12,r14}
-		MOV		pc, r14
+        MOV     pc, r14
 PrintRegCPSR
         MOV     r0, #"C"
         STR     r0, [r1]
@@ -436,40 +436,40 @@ PrintRegNumber_Extra
 
 ;//----------------------------------------------------------------
 PrintWord
-		STMFD	r13!, {r0-r12,r14}
-		LDR		r1, DataFormat
+        STMFD   r13!, {r0-r12,r14}
+        LDR     r1, DataFormat
         MOV     r2, #0              ;// set word mode
-		MOV		r3, #1				;// put format sign
+        MOV     r3, #1              ;// put format sign
         B       PrintGO
 PrintByte
         STMFD   r13!, {r0-r12,r14}
-		LDR		r1, DataFormat
+        LDR     r1, DataFormat
         MOV     r2, #1
-		MOV		r3, #1				;// put format sign
+        MOV     r3, #1              ;// put format sign
         B       PrintGO
 PrintWordPlain
-		STMFD	r13!, {r0-r12,r14}
-		LDR		r1, DataFormat
+        STMFD   r13!, {r0-r12,r14}
+        LDR     r1, DataFormat
         MOV     r2, #0              ;// set word mode
-		MOV		r3, #0				;// don't put format sign
+        MOV     r3, #0              ;// don't put format sign
         B       PrintGO
 PrintBytePlain
-		STMFD	r13!, {r0-r12,r14}
-		LDR		r1, DataFormat
+        STMFD   r13!, {r0-r12,r14}
+        LDR     r1, DataFormat
         MOV     r2, #1
-		MOV		r3, #0				;// don't put format sign
+        MOV     r3, #0              ;// don't put format sign
         B       PrintGO
 PrintAddress
-		STMFD	r13!, {r0-r12,r14}
-		MOV		r1, #16
+        STMFD   r13!, {r0-r12,r14}
+        MOV     r1, #16
         MOV     r2, #0
-		MOV		r3, #0				;// don't put format sign
+        MOV     r3, #0              ;// don't put format sign
         B       PrintGO
 
 PrintGO
         ;// Hex
-		CMP		r1, #16
-		BLEQ    Print16
+        CMP     r1, #16
+        BLEQ    Print16
 
         CMP     r1, #10
         BLEQ    Print10
@@ -477,28 +477,28 @@ PrintGO
         CMP     r1, #2
         BLEQ    Print2
         
-		CMP		r3, #1
-		BLEQ	PrintFormatSign
+        CMP     r3, #1
+        BLEQ    PrintFormatSign
 
         LDMFD   r13!, {r0-r12,r14}
         MOV     pc, r14
 
 ;//----------------------------------------------------------------
 PrintFormatSign
-		STMFD   r13!, {r0-r12,r14}
-		
-		LDR		r1, DataFormat
-		CMP		r1, #16
+        STMFD   r13!, {r0-r12,r14}
+        
+        LDR     r1, DataFormat
+        CMP     r1, #16
         MOVEQ   r0, #"h"
-		CMP		r1, #10
-		MOVEQ	r0, #"d"
-		CMP		r1, #2
-		MOVEQ	r0, #"b"
-		LDR     r1, =SendChar
+        CMP     r1, #10
+        MOVEQ   r0, #"d"
+        CMP     r1, #2
+        MOVEQ   r0, #"b"
+        LDR     r1, =SendChar
         STR     r0, [r1]
         WriteC
 
-		LDMFD   r13!, {r0-r12,r14}
+        LDMFD   r13!, {r0-r12,r14}
         MOV     pc, r14
 
 ;//----------------------------------------------------------------
@@ -527,7 +527,7 @@ Print16_End
 
 ;//----------------------------------------------------------------
 Print2
-		STMFD	r13!, {r0-r12,r14}
+        STMFD   r13!, {r0-r12,r14}
         MOV     r3, r0
         LDR     r1, =SendChar
 
@@ -551,12 +551,12 @@ Print2_Loop
         WriteC
         B       Print2_Loop
 Print2_End
-		LDMFD	r13!, {r0-r12,r14}
-		MOV		pc, r14
+        LDMFD   r13!, {r0-r12,r14}
+        MOV     pc, r14
 
 ;//----------------------------------------------------------------
 Print10
-		STMFD	r13!, {r0-r12,r14}
+        STMFD   r13!, {r0-r12,r14}
         MOV     r3, r0
         LDR     r1, =SendChar
         LDR     r2, =0xCCCCCCCD
@@ -582,36 +582,36 @@ Print10_Loop
         BEQ     Print10_End
         B       Print10_Loop
 Print10_End
-		LDMFD	r13!, {r0-r12,r14}
-		MOV		pc, r14
+        LDMFD   r13!, {r0-r12,r14}
+        MOV     pc, r14
 
 
 ;//----------------------------------------------------------------
 StackInit
         DCD     StackTop
 
-	
+    
         AREA stack, DATA, READWRITE
 ;// Place your data here
 SendChar
-		DCD 	0					;//sended char
-DataFormat							;//the display of memory/register to decimal, hexadecimal or binary
-		DCD		16					;//{10 | 16 | 2}, default 16
-EndianType							;//the data representation to either little-endian ("E 0", default) or big-endian ("E 1").
-		DCD		0					;//{0 | 1}, default 0
+        DCD     0                   ;//sended char
+DataFormat                          ;//the display of memory/register to decimal, hexadecimal or binary
+        DCD     16                  ;//{10 | 16 | 2}, default 16
+EndianType                          ;//the data representation to either little-endian ("E 0", default) or big-endian ("E 1").
+        DCD     0                   ;//{0 | 1}, default 0
 mAddr
-		DCD		0
+        DCD     0
 MAddr
-		DCD		0
+        DCD     0
 Messages1
-		= "Invalid Command!", &0a, &0d, 0
-		ALIGN
+        = "Invalid Command!", &0a, &0d, 0
+        ALIGN
 Messages2
-		= &0a, &0d, 0
-		ALIGN
+        = &0a, &0d, 0
+        ALIGN
 Messages3
-		= "Write Data!"
-		ALIGN
+        = "Write Data!"
+        ALIGN
 Messages4
         = " @ 0x"
         ALIGN
@@ -619,4 +619,3 @@ StackBtm
         %        0x1000 
 StackTop
         END
-
