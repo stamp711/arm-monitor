@@ -122,10 +122,6 @@ Next2
         CMP     r1, #0x43       ;//'C'=0x43
         BNE     Next3
 
-;***********************************************************************
-;               C COMMAND  <r3:source> <r4:dest> <r5:length> 
-;***********************************************************************
-
 CCommand
         CMP     r2, #3
         BEQ     COPYMEMORY
@@ -198,9 +194,6 @@ FADJUSTLOOP
         BGT     FADJUSTLOOP
         B       FSTARTCP
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 HIGHDEST
         ADD     r3, r3, r5        ;last source Address +1
         ADD     r4, r4, r5        ;last dest Address +1
@@ -272,6 +265,7 @@ BADJUSTLOOP
 
 ;//----------------------------------------------------------------
 ;//COMMAND: 'M'
+;//AUTHOR: APRICITY
 Next3
         CMP     r1, #0x4D       ;//'M'=0x4D
         BNE     Next4
@@ -397,6 +391,7 @@ m_end
 
 ;//----------------------------------------------------------------
 ;//COMMAND: 'R' or 'r'
+;//AUTHOR: APRICITY
 Next5
         CMP     r1, #0x52       ;//'R'=0x52
         CMPNE   r1, #0x72       ;//'r'=0x72
